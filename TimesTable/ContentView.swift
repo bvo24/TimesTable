@@ -35,6 +35,9 @@ struct ContentView: View {
     @State private var questions : [Question] = []
     @State private var totalCorrect = 0
     
+    @State private var scoreAlert = false
+    @State private var scoreTitle = ""
+    @State private var scoreMessage = ""
     
     var body: some View {
         if inGame{
@@ -45,7 +48,7 @@ struct ContentView: View {
                 }.padding()
                 Section{
                     Button("Next question!", action: nextQuestion)
-                    Text("Correct \(totalCorrect)")
+                    Text("\(scoreMessage)")
                 }.padding()
                 
                 
@@ -84,6 +87,11 @@ struct ContentView: View {
                 Button("Start practice!" ,action: startGame)
 
             }
+            .alert(scoreTitle, isPresented: $scoreAlert){
+                Button("New game", action: endGame)
+            } message: {
+                Text("Your score was \(scoreMessage)")
+            }
             
         }
     
@@ -95,6 +103,8 @@ struct ContentView: View {
     func startGame(){
         inGame = true
         generateQuestions()
+        scoreMessage = "\(totalCorrect) out of \(numberOfQuestions[numQuestionsIndex])"
+        
     }
     func generateQuestions(){
         questions.removeAll()
@@ -117,12 +127,15 @@ struct ContentView: View {
         numQuestionsIndex = 0
         questionNumber = 0
         inGame = false
+        scoreAlert = true
     }
     
     func checkAnswer(){
         if(ans == questions[questionNumber].answer){
             totalCorrect += 1
+            scoreMessage = "\(totalCorrect) out of \(numberOfQuestions[numQuestionsIndex])"
         }
+        
     
     }
     func nextQuestion(){
